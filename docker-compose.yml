@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8443:8443"
+    volumes:
+      # - ./nifi:/opt/nifi/nifi-current
+      - ./work:/work
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=Admin12345678
+      - NIFI_DATABASE_HOSTNAME=db
+      - NIFI_DATABASE_PORT=5432
+      - NIFI_DATABASE_NAME=nifi
+      - NIFI_DATABASE_USERNAME=nifi
+      - NIFI_DATABASE_PASSWORD=nifi
+      
+  db:
+    image: postgres:13
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nifi
+      POSTGRES_PASSWORD: nifi
+      POSTGRES_DB: nifi
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
